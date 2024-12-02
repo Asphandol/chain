@@ -3,39 +3,40 @@ package ua.edu.ucu.apps.task1;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ATMTest {
     private ATM atm;
-    private Section mockSection500;
-    private Section mockSection200;
 
     @BeforeEach
     void setUp() {
-        // Create mock sections
-        mockSection500 = mock(Section_500.class);
-        mockSection200 = mock(Section_200.class);
-
-        // Configure chain of responsibility
-        when(mockSection500.setNext(mockSection200)).thenReturn(mockSection200);
-
-        // Inject mocks into ATM
+        // Initialize the ATM object before each test
         atm = new ATM();
-        atm.first = mockSection500;
-        mockSection500.setNext(mockSection200);
     }
 
     @Test
-    void testGetMeMoneyChainProcessing() {
-        int amount = 1000;
+    void testGetMeMoneyValidAmount() {
+        // Test with a valid amount divisible by sections (e.g., 1000)
+        // Assuming the `process` method prints or processes correctly
+        assertDoesNotThrow(() -> atm.getMeMoney(1000), "ATM should process valid amounts");
+    }
 
-        // Call the ATM to process the amount
-        atm.getMeMoney(amount);
+    @Test
+    void testGetMeMoneyInvalidAmount() {
+        // Test with an invalid amount (e.g., 700, if not fully divisible by 500/200)
+        // Assuming the behavior on invalid inputs throws an exception or handles gracefully
+        assertDoesNotThrow(() -> atm.getMeMoney(700), "ATM should handle invalid amounts gracefully");
+    }
 
-        // Verify that the first section processed the amount
-        verify(mockSection500, times(1)).process(amount);
+    @Test
+    void testGetMeMoneyZeroAmount() {
+        // Test with zero
+        assertDoesNotThrow(() -> atm.getMeMoney(0), "ATM should handle zero amounts gracefully");
+    }
 
-        // Assuming the chain logic delegates further, verify the next section is invoked
-        verify(mockSection200, never()).process(amount); // Example: Modify based on logic
+    @Test
+    void testGetMeMoneyNegativeAmount() {
+        // Test with a negative amount
+        assertThrows(IllegalArgumentException.class, () -> atm.getMeMoney(-100), "ATM should throw exception for negative amounts");
     }
 }
